@@ -1,5 +1,5 @@
 from py2neo import Graph, Node, Relationship
-
+import datanommer.models as m
 
 
 graph_uri = "http://localhost:8182/db/data"

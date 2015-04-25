@@ -8,7 +8,7 @@ graph_uri = "http://localhost:8182/db/data"
 class GraphFeed(object):
 
     def __init__(self):
-        m.init(alembic_init='alembric.ini')
+        m.init(alembic_ini='alembric.ini')
         self.graph = Graph()
 
     def buildGraph(self, offset=0, limit=100):

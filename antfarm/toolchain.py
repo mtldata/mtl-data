@@ -1,4 +1,4 @@
-import bulbs.rexster as graph
+from py2neo import Graph, Node, Relationship
 import datanommer.models as m
 
 
@@ -9,20 +9,20 @@ class GraphFeed(object):
 
     def __init__(self):
         m.init(config='alembric.ini')
-        config = graph.Config(graph_uri)
-        self.graph = graph.Graph(config)
+        self.graph = Graph()
 
     def buildGraph(self, offset=0, limit=100):
         rows = m.Message.query.all().offset(offset).limit(limit)
         for row in rows:
-            users = [self.graph.vertices.get_or_create('user', x.name)
+            users = [Node('user', x.name)
                      for x in row.users.all()]
-            pkgs = [self.graph.vertices.get_or_create('package', x.name)
+            pkgs = [Node('package', x.name)
                     for x in row.packages.all()]
             props = {'timestamp': row.timestamp,
                      'category': row.category}
             for user in users:
-                [self.graph.edges.create(user, row.topic, p, props) for p in pkgs]
+                [Relationship(user, row.topic, p)
+                 for p in pkgs]
 
 
 def main():

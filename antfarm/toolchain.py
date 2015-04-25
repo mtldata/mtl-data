@@ -1,5 +1,5 @@
 from py2neo import Graph, Node, Relationship
-import datanommer.models as m
+
 
 
 graph_uri = "http://localhost:8182/db/data"
@@ -8,7 +8,7 @@ graph_uri = "http://localhost:8182/db/data"
 class GraphFeed(object):
 
     def __init__(self):
-        m.init(config='alembric.ini')
+        m.init(alembic_init='alembric.ini')
         self.graph = Graph()
 
     def buildGraph(self, offset=0, limit=100):

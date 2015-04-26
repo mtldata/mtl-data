@@ -29,13 +29,13 @@ class GraphFeed(object):
 
     def addUsers(self):
         users = m.session.query(m.User).limit(10).all()
-        batch = WriteBatch(self.graph)
+        tx = self.graph.cypher.begin()
         user_list = [Node('user', x.name) for x in users]
-        cypher = "MERGE (user:User {name:{name}}) RETURN user"
+        cypher = "MERGE (n:user {name:{N}}) RETURN n"
         for name in user_list:
-            batch.append_cypher(cypher, params={'name': name})
-
-        batch.submit()
+            tx.append(cypher, params={'N': name})
+        tx.process()
+        tx.commit()
 
     def addPackages(self):
         pkgs = m.session.query(m.Package).all()

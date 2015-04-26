@@ -28,7 +28,7 @@ class GraphFeed(object):
                  for p in pkgs]
 
     def addUsers(self):
-        users = m.session.query(m.User).limit(10).all()
+        users = m.session.query(m.User).all()
         tx = self.graph.cypher.begin()
         user_list = [x.name for x in users]
         cypher = "MERGE (n:user {name:{N}}) RETURN n"
@@ -39,10 +39,14 @@ class GraphFeed(object):
 
     def addPackages(self):
         pkgs = m.session.query(m.Package).all()
-        batch = WriteBatch(self.graph)
-        pkgs_list = [Node('package', x.name) for x in pkgs]
-        batch.append(pkgs_list)
-        batch.save()
+        cypher = "MERGE (n:package {name:{N}}) RETURN n"
+        pkgs_list = [x.name for x in pkgs]
+        tx = self.graph.cypher.begin()
+        for name in pkgs_list:
+            tx.append(cypher, {'N': name})
+        tx.process()
+        tx.commit()
+
 
 def main():
     stream = GraphFeed()

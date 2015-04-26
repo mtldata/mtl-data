@@ -8,7 +8,8 @@ graph_uri = "http://localhost:8182/db/data"
 class GraphFeed(object):
 
     def __init__(self):
-        m.init(uri= 'postgresql://datanommer:datanommer@localhost/datanommer')
+        # m.init(uri= 'postgresql://datanommer:datanommer@localhost/datanommer')
+        m.init('postgresql+psycopg2://datanommer:datanommer@localhost:5432/datanommer')
         self.graph = Graph()
 
     def buildGraph(self, offset=0, limit=100):

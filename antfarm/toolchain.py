@@ -28,7 +28,7 @@ class GraphFeed(object):
 
 def main():
     stream = GraphFeed()
-    stream.buildGraph(start=0, offset=100)
+    stream.buildGraph(limit=100, offset=0)
 
 if __name__ == '__main__':
     main()

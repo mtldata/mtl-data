@@ -30,10 +30,10 @@ class GraphFeed(object):
     def addUsers(self):
         users = m.session.query(m.User).limit(10).all()
         tx = self.graph.cypher.begin()
-        user_list = [Node('user', x.name) for x in users]
+        user_list = [x.name for x in users]
         cypher = "MERGE (n:user {name:{N}}) RETURN n"
         for name in user_list:
-            tx.append(cypher, params={'N': name})
+            tx.append(cypher, {'N': name})
         tx.process()
         tx.commit()
 

@@ -16,9 +16,9 @@ class GraphFeed(object):
         rows = m.session.query(m.Message).offset(offset).limit(limit).all()
         for row in rows:
             users = [Node('user', x.name)
-                     for x in row.users.all()]
+                     for x in row.users]
             pkgs = [Node('package', x.name)
-                    for x in row.packages.all()]
+                    for x in row.packages]
             props = {'timestamp': row.timestamp,
                      'category': row.category}
             for user in users:

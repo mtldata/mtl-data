@@ -8,11 +8,11 @@ graph_uri = "http://localhost:8182/db/data"
 class GraphFeed(object):
 
     def __init__(self):
-        m.init(alembic_ini='alembric.ini')
+        m.init(uri= 'postgresql://datanommer:datanommer@localhost/datanommer')
         self.graph = Graph()
 
     def buildGraph(self, offset=0, limit=100):
-        rows = m.Message.query.all().offset(offset).limit(limit)
+        rows = m.session.query(m.Message).offset(offset).limit(limit).all()
         for row in rows:
             users = [Node('user', x.name)
                      for x in row.users.all()]

@@ -22,7 +22,7 @@ class GraphFeed(object):
             props = {'timestamp': row.timestamp,
                      'category': row.category}
             for user in users:
-                [Relationship(user, row.topic, p)
+                [self.graph.create(Relationship(user, row.topic, p))
                  for p in pkgs]
 
 

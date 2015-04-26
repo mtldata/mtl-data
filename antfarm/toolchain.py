@@ -1,4 +1,5 @@
 from py2neo import Graph, Node, Relationship
+from py2neo.batch import WriteBatch
 import datanommer.models as m
 
 
@@ -21,10 +22,27 @@ class GraphFeed(object):
                     for x in row.packages]
             props = {'timestamp': row.timestamp,
                      'category': row.category}
+            batch = WriteBatch(self.graph)
             for user in users:
-                [self.graph.create(Relationship(user, row.topic, p))
+                [batch.get_or_create_relationship(user, row.topic, p)
                  for p in pkgs]
 
+    def addUsers(self):
+        users = m.session.query(m.User).limit(10).all()
+        batch = WriteBatch(self.graph)
+        user_list = [Node('user', x.name) for x in users]
+        cypher = "MERGE (user:User {name:{name}}) RETURN user"
+        for name in user_list:
+            batch.append_cypher(cypher, params={'name': name})
+
+        batch.submit()
+
+    def addPackages(self):
+        pkgs = m.session.query(m.Package).all()
+        batch = WriteBatch(self.graph)
+        pkgs_list = [Node('package', x.name) for x in pkgs]
+        batch.append(pkgs_list)
+        batch.save()
 
 def main():
     stream = GraphFeed()

@@ -16,7 +16,7 @@ class GraphFeed(object):
     def buildGraph(self, offset=0, limit=100):
         rows = m.session.query(m.Message).offset(offset).limit(limit).all()
         for row in rows:
-            topic = row.topic.translate('_', '.')
+            topic = row.topic.replace('.', '_')
             cypher = 'MATCH (u:user {name:{user}}), (p:package {name: {pkg}}) ' \
                      'MERGE (u)-[r:' + topic + ' {timestamp: {time}, category: {cat}, msg_id: {msg_id}}]->(p) ' \
                      'RETURN r'

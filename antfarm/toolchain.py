@@ -19,7 +19,7 @@ class GraphFeed(object):
             cypher = 'MATCH (u:user {name:{user}}), (p:package {name: {pkg}}) '
             'MERGE (u)-[r:{topic} {timestamp: {time}, category: {cat}, msg_id: {msg_id}}]->(p) '
             'RETURN r'
-            tx = self.cypher.begin()
+            tx = self.graph.cypher.begin()
             for row in rows:
                 param = {'user': row.users[0].name,
                          'pkg': row.packages[0].name,

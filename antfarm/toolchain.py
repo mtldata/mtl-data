@@ -17,13 +17,12 @@ class GraphFeed(object):
         rows = m.session.query(m.Message).offset(offset).limit(limit).all()
         for row in rows:
             cypher = 'MATCH (u:user {name:{user}}), (p:package {name: {pkg}}) ' \
-                     'MERGE (u)-[r:{topic} {timestamp: {time}, category: {cat}, msg_id: {msg_id}}]->(p) ' \
+                     'MERGE (u)-[r:' + row.topic + ' {timestamp: {time}, category: {cat}, msg_id: {msg_id}}]->(p) ' \
                      'RETURN r'
             tx = self.graph.cypher.begin()
             for row in rows:
                 param = {'user': row.users[0].name,
                          'pkg': row.packages[0].name,
-                         'topic': row.topic,
                          'time': row.timestamp,
                          'cat': row.category,
                          'msg_id': row.msg_id}

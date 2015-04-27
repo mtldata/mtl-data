@@ -16,16 +16,20 @@ class GraphFeed(object):
     def buildGraph(self, offset=0, limit=100):
         rows = m.session.query(m.Message).offset(offset).limit(limit).all()
         for row in rows:
-            users = [Node('user', x.name)
-                     for x in row.users]
-            pkgs = [Node('package', x.name)
-                    for x in row.packages]
-            props = {'timestamp': row.timestamp,
-                     'category': row.category}
-            batch = WriteBatch(self.graph)
-            for user in users:
-                [batch.get_or_create_relationship(user, row.topic, p)
-                 for p in pkgs]
+            cypher = 'MATCH (u:user {name:{user}}), (p:package {name: {pkg}}) '
+            'MERGE (u)-[r:{topic} {timestamp: {time}, category: {cat}, msg_id: {msg_id}}]->(p) '
+            'RETURN r'
+            tx = self.cypher.begin()
+            for row in rows:
+                param = {'user': row.users[0].name,
+                         'pkg': row.packages[0].name,
+                         'topic': row.topic,
+                         'time': row.timestamp,
+                         'cat': row.category,
+                         'msg_id': row.msg_id}
+                tx.append(cypher, param)
+            tx.process()
+            tx.commit()
 
     def addUsers(self):
         users = m.session.query(m.User).all()
